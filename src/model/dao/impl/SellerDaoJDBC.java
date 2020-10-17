@@ -26,23 +26,23 @@ public class SellerDaoJDBC implements SellerDao {
 
 	@Override
 	public void insert(Seller seller) {
-		PreparedStatement st = null;
+		PreparedStatement ps = null;
 
 		try {
-			st = conn.prepareStatement(
+			ps = conn.prepareStatement(
 					"INSERT INTO seller (Name, Email, BirthDate, BaseSalary, DepartmentId) VALUES (?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 
-			st.setString(1, seller.getName());
-			st.setString(2, seller.getEmail());
-			st.setDate(3, new java.sql.Date(seller.getBithDate().getTime()));
-			st.setDouble(4, seller.getBaseSalary());
-			st.setInt(5, seller.getDepartment().getId());
+			ps.setString(1, seller.getName());
+			ps.setString(2, seller.getEmail());
+			ps.setDate(3, new java.sql.Date(seller.getBithDate().getTime()));
+			ps.setDouble(4, seller.getBaseSalary());
+			ps.setInt(5, seller.getDepartment().getId());
 
-			int rowsAffected = st.executeUpdate();
+			int rowsAffected = ps.executeUpdate();
 
 			if (rowsAffected > 0) {
-				ResultSet rs = st.getGeneratedKeys();
+				ResultSet rs = ps.getGeneratedKeys();
 
 				if (rs.next()) {
 					int id = rs.getInt(1);
@@ -57,37 +57,47 @@ public class SellerDaoJDBC implements SellerDao {
 		} catch (SQLException e) {
 			throw new DbException(e.getMessage());
 		} finally {
-			DB.closeStatement(st);
+			DB.closeStatement(ps);
 		}
 	}
 
 	@Override
 	public void update(Seller seller) {
-		PreparedStatement st = null;
+		PreparedStatement ps = null;
 
 		try {
-			st = conn.prepareStatement(
+			ps = conn.prepareStatement(
 					"UPDATE seller SET Name = ?, Email = ?, BirthDate = ?, BaseSalary = ?, DepartmentId = ? WHERE Id = ?");
 
-			st.setString(1, seller.getName());
-			st.setString(2, seller.getEmail());
-			st.setDate(3, new java.sql.Date(seller.getBithDate().getTime()));
-			st.setDouble(4, seller.getBaseSalary());
-			st.setInt(5, seller.getDepartment().getId());
-			st.setInt(6, seller.getId());
+			ps.setString(1, seller.getName());
+			ps.setString(2, seller.getEmail());
+			ps.setDate(3, new java.sql.Date(seller.getBithDate().getTime()));
+			ps.setDouble(4, seller.getBaseSalary());
+			ps.setInt(5, seller.getDepartment().getId());
+			ps.setInt(6, seller.getId());
 
-			st.executeUpdate();
+			ps.executeUpdate();
 		} catch (SQLException e) {
 			throw new DbException(e.getMessage());
 		} finally {
-			DB.closeStatement(st);
+			DB.closeStatement(ps);
 		}
 	}
 
 	@Override
 	public void deleteById(Integer id) {
-		// TODO Auto-generated method stub
+		PreparedStatement ps = null;
 
+		try {
+			ps = conn.prepareStatement("DELETE FROM seller WHERE id = ?");
+
+			ps.setInt(1, id);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeStatement(ps);
+		}
 	}
 
 	@Override
